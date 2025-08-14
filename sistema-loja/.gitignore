@@ -33,3 +33,6 @@ build/
 .vscode/
 ### intelij ###
 ../.idea
+
+### variaveis de ambiente###
+.env
