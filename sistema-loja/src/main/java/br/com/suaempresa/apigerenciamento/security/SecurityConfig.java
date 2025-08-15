@@ -29,7 +29,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         http
                 // 1. Desabilita o CSRF, pois não usamos sessões/cookies
                 .csrf(AbstractHttpConfigurer::disable)
@@ -43,7 +43,7 @@ public class SecurityConfig {
                 // 3. Configura a gestão de sessão como STATELESS (sem estado)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 4. Define o provedor de autenticação customizado
-                .authenticationProvider(authenticationProvider())
+                .authenticationProvider(authenticationProvider)
                 // 5. Adiciona nosso filtro JWT antes do filtro padrão de autenticação
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -51,11 +51,19 @@ public class SecurityConfig {
     }
 
     // Bean que define o provedor de autenticação
+//    @Bean
+//    public AuthenticationProvider authenticationProvider() {
+//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+//        authProvider.setUserDetailsService(userDetailsService); // Nosso serviço de busca de usuário
+//        authProvider.setPasswordEncoder(passwordEncoder()); // Nosso codificador de senhas
+//        return authProvider;
+//    }
+    // As dependências são injetadas como PARÂMETROS DO MÉTODO
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService); // Nosso serviço de busca de usuário
-        authProvider.setPasswordEncoder(passwordEncoder()); // Nosso codificador de senhas
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 
