@@ -18,6 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -31,6 +36,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         http
+                // **** ADICIONADO: Habilita a configuração de CORS definida no Bean 'corsConfigurationSource' ****
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // 1. Desabilita o CSRF, pois não usamos sessões/cookies
                 .csrf(AbstractHttpConfigurer::disable)
                 // 2. Define as regras de autorização para os endpoints
@@ -49,6 +56,26 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    // **** NOVO BEAN: Define as configurações de CORS ****
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Define a origem permitida (sua aplicação Vite)
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        // Define os métodos HTTP permitidos (GET, POST, PUT, DELETE, etc.)
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
+        // Permite todos os cabeçalhos
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // Permite o envio de credenciais (como cookies ou tokens de autenticação)
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Aplica a configuração a todos os paths da sua API
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
     // Bean que define o provedor de autenticação
 //    @Bean

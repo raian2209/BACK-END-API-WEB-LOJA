@@ -63,8 +63,7 @@ class AuthControllerTest {
         authenticatedUser.setSenha("senhaCriptografada"); // A senha real não importa aqui
         authenticatedUser.setRole(Role.ROLE_USUARIO);
 
-        // --- ESTA É A LINHA QUE FALTAVA ---
-        // Configura o mock do UserDetailsService para encontrar o usuário com sucesso.
+
         when(userDetailsService.loadUserByUsername("usuario@example.com")).thenReturn(authenticatedUser);
 
         // Configura o mock do AuthenticationManager para simular que a senha está correta
