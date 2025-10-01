@@ -1,5 +1,7 @@
 package br.com.suaempresa.apigerenciamento.security.auth;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +9,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AuthRequestDTO {
+
+    @NotEmpty(message = "Insira algum email")
+    @Email(message = "email invalido")
     private String email;
+
+    @NotEmpty(message = "Digite sua senha")
     private String senha;
 }
