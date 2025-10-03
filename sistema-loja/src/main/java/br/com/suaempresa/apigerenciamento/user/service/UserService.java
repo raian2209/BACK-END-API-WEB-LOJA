@@ -50,6 +50,50 @@ public class UserService  implements UserDetailsService {
         return mapToResponseDTO(savedUser);
     }
 
+    @Transactional
+    public UserResponseDTO registerFornecedor(UserRegistrationDTO registrationDTO) {
+        // 1. Validação: Verifica se o e-mail já existe
+        userRepository.findByEmail(registrationDTO.getEmail()).ifPresent(user -> {
+            throw new EmailAlreadyExistsException("E-mail já cadastrado: " + registrationDTO.getEmail());
+        });
+
+        // 2. Lógica: Cria e salva o novo usuário
+        User newUser = new User();
+        newUser.setNome(registrationDTO.getNome());
+        newUser.setEmail(registrationDTO.getEmail());
+        // CRUCIAL: Codifica a senha antes de salvar!
+        newUser.setSenha(passwordEncoder.encode(registrationDTO.getSenha()));
+        // Por padrão, novos registros são do tipo USUARIO
+        newUser.setRole(Role.ROLE_FORNECEDOR);
+
+        User savedUser = userRepository.save(newUser);
+
+        // 3. Mapeamento: Converte a entidade para um DTO de resposta
+        return mapToResponseDTO(savedUser);
+    }
+
+    @Transactional
+    public UserResponseDTO registerAdmin(UserRegistrationDTO registrationDTO) {
+        // 1. Validação: Verifica se o e-mail já existe
+        userRepository.findByEmail(registrationDTO.getEmail()).ifPresent(user -> {
+            throw new EmailAlreadyExistsException("E-mail já cadastrado: " + registrationDTO.getEmail());
+        });
+
+        // 2. Lógica: Cria e salva o novo usuário
+        User newUser = new User();
+        newUser.setNome(registrationDTO.getNome());
+        newUser.setEmail(registrationDTO.getEmail());
+        // CRUCIAL: Codifica a senha antes de salvar!
+        newUser.setSenha(passwordEncoder.encode(registrationDTO.getSenha()));
+        // Por padrão, novos registros são do tipo USUARIO
+        newUser.setRole(Role.ROLE_ADMIN);
+
+        User savedUser = userRepository.save(newUser);
+
+        // 3. Mapeamento: Converte a entidade para um DTO de resposta
+        return mapToResponseDTO(savedUser);
+    }
+
     @Transactional(readOnly = true)
     public List<UserResponseDTO> findAllUsers() {
         return userRepository.findAll()

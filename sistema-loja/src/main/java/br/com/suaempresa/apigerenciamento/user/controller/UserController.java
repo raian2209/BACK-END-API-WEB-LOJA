@@ -22,9 +22,21 @@ public class UserController {
     }
 
     // Endpoint PÚBLICO para registro
-    @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
+    @PostMapping("/usuario/register")
+    public ResponseEntity<UserResponseDTO> registerUsuario(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
         UserResponseDTO createdUser = userService.registerUser(registrationDTO);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/fornecedor/register")
+    public ResponseEntity<UserResponseDTO> registerFornecedor(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
+        UserResponseDTO createdUser = userService.registerFornecedor(registrationDTO);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/fornecedor/dono")
+    public ResponseEntity<UserResponseDTO> registerDono(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
+        UserResponseDTO createdUser = userService.registerAdmin(registrationDTO);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 

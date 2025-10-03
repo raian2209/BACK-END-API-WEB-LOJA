@@ -61,7 +61,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Define a origem permitida (sua aplicação Vite)
+        // Define a origem permitida Load balancer
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         // Define os métodos HTTP permitidos (GET, POST, PUT, DELETE, etc.)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
@@ -77,14 +77,6 @@ public class SecurityConfig {
     }
 
 
-    // Bean que define o provedor de autenticação
-//    @Bean
-//    public AuthenticationProvider authenticationProvider() {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(userDetailsService); // Nosso serviço de busca de usuário
-//        authProvider.setPasswordEncoder(passwordEncoder()); // Nosso codificador de senhas
-//        return authProvider;
-//    }
     // As dependências são injetadas como PARÂMETROS DO MÉTODO
     @Bean
     public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
