@@ -22,4 +22,34 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(erros, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(CupomInvalidoException.class)
+    public ResponseEntity<Map<String, String>> handleCupomInvalidoException(CupomInvalidoException ex) {
+        Map<String, String> erros = new HashMap<>();
+        erros.put("erro", ex.getMessage());
+        return new ResponseEntity<>(erros, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CupomNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleCupomNotFoundException(CupomNotFoundException ex) {
+        Map<String, String> erros = new HashMap<>();
+        erros.put("erro", ex.getMessage());
+        return new ResponseEntity<>(erros, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
+        Map<String, String> erros = new HashMap<>();
+        erros.put("erro", ex.getMessage());
+        return new ResponseEntity<>(erros, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ProdutoNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleProdutoNotFoundException(ProdutoNotFoundException ex) {
+        Map<String, String> erros = new HashMap<>();
+        erros.put("erro", ex.getMessage());
+        return new ResponseEntity<>(erros, HttpStatus.NOT_FOUND);
+    }
+
+
 }
