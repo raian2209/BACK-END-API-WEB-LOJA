@@ -36,7 +36,7 @@ public class PedidoService {
         this.cupomRepository = cupomRepository;
     }
 
-    @Transactional // Garante a atomicidade da operação
+    @Transactional
     public PedidoResponseDTO createPedido(PedidoRequestDTO requestDTO, User cliente) {
         // 1. Cria a entidade Pedido e associa ao cliente
         Pedido pedido = new Pedido();
@@ -67,7 +67,6 @@ public class PedidoService {
 
         pedido.setItens(itensPedido);
 
-        // 3. Lógica de Cupom (opcional)
          if (requestDTO.getCodigoCupom() != null && !requestDTO.getCodigoCupom().isBlank()) {
              Cupom cupom = validarEObterCupom(requestDTO.getCodigoCupom());
              totalPedido = aplicarDesconto(totalPedido, cupom);
@@ -76,7 +75,6 @@ public class PedidoService {
 
         pedido.setTotal(totalPedido.doubleValue());
 
-        // 4. Salva o pedido. A cascata salvará os itens automaticamente.
         Pedido savedPedido = pedidoRepository.save(pedido);
 
         return mapToResponseDTO(savedPedido);
@@ -111,7 +109,6 @@ public class PedidoService {
     // Implementar métodos para buscar e listar pedidos, com verificação de permissão
     // ...
 
-    // Método utilitário para mapear Entidade -> DTO
     private PedidoResponseDTO mapToResponseDTO(Pedido pedido) {
         PedidoResponseDTO response = new PedidoResponseDTO();
         response.setId(pedido.getId());

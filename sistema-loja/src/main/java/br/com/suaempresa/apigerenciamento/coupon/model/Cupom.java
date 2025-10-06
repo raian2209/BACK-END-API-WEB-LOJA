@@ -29,13 +29,10 @@ public class Cupom {
     @Column(nullable = false)
     private BigDecimal valorDesconto;
 
-    @Column(nullable = false)
-    private LocalDate dataValidade;
 
     @Column(nullable = false)
     private boolean ativo;
 
-    // Relacionamento para auditoria: um cupom pode ser usado em muitos pedidos.
     @OneToMany(mappedBy = "cupom")
     private List<Pedido> pedidos;
 }

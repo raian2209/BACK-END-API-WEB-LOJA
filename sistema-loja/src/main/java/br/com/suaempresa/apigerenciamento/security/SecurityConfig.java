@@ -43,7 +43,7 @@ public class SecurityConfig {
                 // 2. Define as regras de autorização para os endpoints
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos que não exigem autenticação
-                        .requestMatchers("/api/auth/**", "/api/users/register").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/users/**").permitAll()
                         // Qualquer outra requisição deve ser autenticada
                         .anyRequest().authenticated()
                 )
@@ -62,7 +62,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Define a origem permitida Load balancer
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList("*"));
         // Define os métodos HTTP permitidos (GET, POST, PUT, DELETE, etc.)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
         // Permite todos os cabeçalhos

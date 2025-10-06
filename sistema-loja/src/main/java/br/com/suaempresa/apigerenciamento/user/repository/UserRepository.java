@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Método essencial para o Spring Security encontrar o usuário pelo e-mail
     Optional<User> findByEmail(String email);
 
+    Optional<User> deleteByEmail(String email);
+
     // Este método IGNORA a cláusula @Where global porque a consulta é explícita.
     @Query("SELECT u FROM User u WHERE u.deleted = true")
     List<User> findAllDeleted();

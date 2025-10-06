@@ -41,13 +41,13 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String senha;
 
-    @Enumerated(EnumType.STRING) // Armazena o nome do Enum no banco ("ROLE_ADMIN")
+    @Enumerated(EnumType.STRING) //  Enum no banco ("ROLE_ADMIN")
     @Column(nullable = false)
     private Role role;
 
     // para Soft Delete
     @Column(name = "deleted")
-    private boolean deleted = false; // O valor padrão é 'false'
+    private boolean deleted = false;
 
     // Métodos do UserDetails para integração com o Spring Security
     @Override

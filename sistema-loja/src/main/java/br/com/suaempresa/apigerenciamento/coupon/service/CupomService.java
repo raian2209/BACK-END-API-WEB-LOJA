@@ -75,7 +75,6 @@ public class CupomService {
         cupomRepository.findById(id)
                 .orElseThrow(() -> new ProdutoNotFoundException("Produto não encontrado com o ID: " + id));
 
-        // A anotação @SQLDelete no model fará a mágica do Soft Delete
         cupomRepository.deleteById(id);
     }
 

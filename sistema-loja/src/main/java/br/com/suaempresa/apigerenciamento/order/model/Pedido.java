@@ -35,7 +35,6 @@ public class Pedido {
     @Column(nullable = false)
     private Double total;
 
-    // A mágica da cascata: ao salvar um Pedido, os ItensPedido associados também serão salvos.
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemPedido> itens = new ArrayList<>();
 

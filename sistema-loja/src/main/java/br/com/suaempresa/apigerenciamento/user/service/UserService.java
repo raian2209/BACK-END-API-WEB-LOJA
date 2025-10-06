@@ -30,7 +30,6 @@ public class UserService  implements UserDetailsService {
 
     @Transactional
     public UserResponseDTO registerUser(UserRegistrationDTO registrationDTO) {
-        // 1. Validação: Verifica se o e-mail já existe
         userRepository.findByEmail(registrationDTO.getEmail()).ifPresent(user -> {
             throw new EmailAlreadyExistsException("E-mail já cadastrado: " + registrationDTO.getEmail());
         });
@@ -74,7 +73,6 @@ public class UserService  implements UserDetailsService {
 
     @Transactional
     public UserResponseDTO registerAdmin(UserRegistrationDTO registrationDTO) {
-        // 1. Validação: Verifica se o e-mail já existe
         userRepository.findByEmail(registrationDTO.getEmail()).ifPresent(user -> {
             throw new EmailAlreadyExistsException("E-mail já cadastrado: " + registrationDTO.getEmail());
         });
@@ -112,16 +110,36 @@ public class UserService  implements UserDetailsService {
         return dto;
     }
 
+
     @Transactional
-    public void deleteUsuario(Long id) {
-        // Esta chamada agora executa o UPDATE definido em @SQLDelete
-        // Nenhuma mudança é necessária aqui!
-        userRepository.deleteById(id);
+    public UserResponseDTO updateUsuario(UserRegistrationDTO usuario){
+        User usuarioSecao = userRepository.findByEmail(usuario.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + usuario.getEmail()));
+
+        usuarioSecao.setEmail(usuario.getEmail());
+        usuarioSecao.setSenha(usuario.getSenha());
+        usuarioSecao.setNome(usuario.getNome());
+
+        userRepository.save(usuarioSecao);
+
+        return this.mapToResponseDTO(usuarioSecao);
     }
 
-    // As buscas também já filtram os excluídos automaticamente
-    public List<User> listarTodosUsuariosAtivos() {
-        return userRepository.findAll();
+    @Transactional
+    public UserResponseDTO deleteUsuario(UserRegistrationDTO usuario) {
+
+        User usuarioSecao = userRepository.findByEmail(usuario.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + usuario.getEmail()));
+
+            userRepository.deleteByEmail(usuarioSecao.getEmail());
+
+            return this.mapToResponseDTO(usuarioSecao);
+    }
+
+
+
+    public List<UserResponseDTO> listarTodosUsuariosInativos() {
+        return userRepository.findAllDeleted().stream().map((usuario)->this.mapToResponseDTO(usuario)).toList();
     }
 
     @Override
