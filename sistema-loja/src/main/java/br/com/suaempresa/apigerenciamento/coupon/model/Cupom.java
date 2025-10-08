@@ -29,6 +29,8 @@ public class Cupom {
     @Column(nullable = false)
     private BigDecimal valorDesconto;
 
+    @Column(nullable = false)
+    private LocalDate dataValidade;
 
     @Column(nullable = false)
     private boolean ativo;
