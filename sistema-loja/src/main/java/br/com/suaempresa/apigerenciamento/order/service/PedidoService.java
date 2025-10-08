@@ -4,6 +4,7 @@ import br.com.suaempresa.apigerenciamento.coupon.model.TipoDesconto;
 import br.com.suaempresa.apigerenciamento.coupon.repository.CupomRepository;
 import br.com.suaempresa.apigerenciamento.exception.CupomInvalidoException;
 import br.com.suaempresa.apigerenciamento.exception.CupomNotFoundException;
+import br.com.suaempresa.apigerenciamento.exception.GlobalExceptionHandler;
 import br.com.suaempresa.apigerenciamento.exception.ProdutoNotFoundException;
 import br.com.suaempresa.apigerenciamento.order.dto.PedidoRequestDTO;
 import br.com.suaempresa.apigerenciamento.order.dto.PedidoResponseDTO;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -109,6 +111,20 @@ public class PedidoService {
     // Implementar métodos para buscar e listar pedidos, com verificação de permissão
     // ...
 
+    public List<PedidoResponseDTO> findOrderByUser(User currentUser) {
+        return Collections.singletonList(mapToResponseDTO((Pedido) pedidoRepository.findByClienteId(currentUser.getId())));
+    }
+
+    public PedidoResponseDTO findOrderById(Long id, User cliente) {
+        Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new CupomNotFoundException("Pedido não encontrado com ID: " + id));
+
+        if (!pedido.getCliente().equals(cliente)) {
+            return null;
+        }
+
+        return mapToResponseDTO(pedido);
+    }
+
     private PedidoResponseDTO mapToResponseDTO(Pedido pedido) {
         PedidoResponseDTO response = new PedidoResponseDTO();
         response.setId(pedido.getId());
@@ -130,4 +146,6 @@ public class PedidoService {
         response.setItens(itensDTO);
         return response;
     }
+
+
 }

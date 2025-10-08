@@ -9,10 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/pedidos")
@@ -36,5 +35,24 @@ public class PedidoController {
     }
 
     // Outros endpoints para listar e buscar pedidos seriam implementados aqui
+    @GetMapping
+    @PreAuthorize("hasRole('USUARIO')")
+    public ResponseEntity<List<PedidoResponseDTO>> getAllPedidos(
+            @AuthenticationPrincipal User currentUser
+    ){
+            List<PedidoResponseDTO> listOrder = pedidoService.findOrderByUser(currentUser);
+            return new ResponseEntity<>(listOrder, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USUARIO')")
+    public ResponseEntity<PedidoResponseDTO> getPedido(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser
+    ){
+        PedidoResponseDTO pedidoResponseDTO = pedidoService.findOrderById(id, currentUser);
+        return new ResponseEntity<>(pedidoResponseDTO, HttpStatus.OK);
+    }
+
     // com a devida lógica de autorização (usuário vê os seus, admin vê todos).
 }
