@@ -54,5 +54,14 @@ public class PedidoController {
         return new ResponseEntity<>(pedidoResponseDTO, HttpStatus.OK);
     }
 
+    @PostMapping("/{id}")
+    @PreAuthorize("hasRole('usuario')")
+    public ResponseEntity<PedidoResponseDTO> cancelOrder(@PathVariable Long id,
+                                                         @AuthenticationPrincipal User currentUser){
+        PedidoResponseDTO pedidoResponseDTO = pedidoService.cancelOrder(id, currentUser);
+
+        return new ResponseEntity<>(pedidoResponseDTO, HttpStatus.NO_CONTENT);
+
+    }
     // com a devida lógica de autorização (usuário vê os seus, admin vê todos).
 }

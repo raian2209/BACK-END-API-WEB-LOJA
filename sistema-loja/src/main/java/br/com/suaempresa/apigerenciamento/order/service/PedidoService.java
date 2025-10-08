@@ -149,4 +149,15 @@ public class PedidoService {
     }
 
 
+    public PedidoResponseDTO cancelOrder(Long id, User currentUser) {
+        Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new CupomNotFoundException("Pedido não encontrado com ID: " + id));
+
+        if (!pedido.getCliente().equals(currentUser)) {
+            throw new AccessDeniedException("Acesso negado. Você não é o proprietário deste produto.");
+        }
+
+        pedido.setStatus(StatusPedido.CANCELADO);
+        pedidoRepository.save(pedido);
+        return mapToResponseDTO(pedido);
+    }
 }
