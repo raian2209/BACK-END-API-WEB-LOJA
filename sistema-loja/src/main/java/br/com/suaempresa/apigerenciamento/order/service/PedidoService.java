@@ -15,6 +15,7 @@ import br.com.suaempresa.apigerenciamento.order.repository.PedidoRepository;
 import br.com.suaempresa.apigerenciamento.product.model.Produto;
 import br.com.suaempresa.apigerenciamento.product.repository.ProdutoRepository;
 import br.com.suaempresa.apigerenciamento.user.model.User;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -119,7 +120,7 @@ public class PedidoService {
         Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new CupomNotFoundException("Pedido não encontrado com ID: " + id));
 
         if (!pedido.getCliente().equals(cliente)) {
-            return null;
+            throw new AccessDeniedException("Acesso negado. Você não é o proprietário deste produto.");
         }
 
         return mapToResponseDTO(pedido);
