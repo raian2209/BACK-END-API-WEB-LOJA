@@ -37,7 +37,7 @@ public class PedidoController {
     // Outros endpoints para listar e buscar pedidos seriam implementados aqui
     @GetMapping
     @PreAuthorize("hasRole('USUARIO')")
-    public ResponseEntity<List<PedidoResponseDTO>> getAllPedidos(
+    public ResponseEntity<List<PedidoResponseDTO>> getAllByPedidos(
             @AuthenticationPrincipal User currentUser
     ){
             List<PedidoResponseDTO> listOrder = pedidoService.findOrderByUser(currentUser);
