@@ -46,9 +46,8 @@ public class UserController {
     // TODO DELETE
     @DeleteMapping
     @PreAuthorize("hasRole('USUARIO')")
-    public ResponseEntity<UserResponseDTO> deleteUser( @Valid @RequestBody UserRegistrationDTO userDTO,
-                                             @AuthenticationPrincipal User currentUser) {
-        UserResponseDTO responseDTO = userService.deleteUsuario(userDTO);
+    public ResponseEntity<UserResponseDTO> deleteUser(@AuthenticationPrincipal User currentUser) {
+        UserResponseDTO responseDTO = userService.deleteUsuario(currentUser);
         return new ResponseEntity<>(responseDTO,HttpStatus.OK);
     }
 
@@ -56,7 +55,7 @@ public class UserController {
     @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<UserResponseDTO> updateUser( @Valid @RequestBody UserRegistrationDTO userDTO,
                                                        @AuthenticationPrincipal User currentUser) {
-        UserResponseDTO responseDTO = userService.updateUsuario(userDTO);
+        UserResponseDTO responseDTO = userService.updateUsuario(userDTO, currentUser);
         return new ResponseEntity<>(responseDTO,HttpStatus.OK);
     }
 

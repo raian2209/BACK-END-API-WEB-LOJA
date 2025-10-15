@@ -1,6 +1,7 @@
 package br.com.suaempresa.apigerenciamento.user.service;
 
 import br.com.suaempresa.apigerenciamento.exception.EmailAlreadyExistsException;
+import br.com.suaempresa.apigerenciamento.exception.ForbiddenException;
 import br.com.suaempresa.apigerenciamento.user.dto.UserRegistrationDTO;
 import br.com.suaempresa.apigerenciamento.user.dto.UserResponseDTO;
 import br.com.suaempresa.apigerenciamento.user.model.Role;
@@ -112,12 +113,16 @@ public class UserService  implements UserDetailsService {
 
 
     @Transactional
-    public UserResponseDTO updateUsuario(UserRegistrationDTO usuario){
+    public UserResponseDTO updateUsuario(UserRegistrationDTO usuario, User currentUser) {
         User usuarioSecao = userRepository.findByEmail(usuario.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + usuario.getEmail()));
 
+        if (!usuario.getSenha().equals(usuarioSecao.getSenha())) {
+            throw new ForbiddenException("Você só pode alterar somente seus dados, não de contas alheias");
+        }
+
         usuarioSecao.setEmail(usuario.getEmail());
-        usuarioSecao.setSenha(usuario.getSenha());
+        usuarioSecao.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuarioSecao.setNome(usuario.getNome());
 
         userRepository.save(usuarioSecao);
@@ -126,10 +131,10 @@ public class UserService  implements UserDetailsService {
     }
 
     @Transactional
-    public UserResponseDTO deleteUsuario(UserRegistrationDTO usuario) {
+    public UserResponseDTO deleteUsuario(User currentUser) {
 
-        User usuarioSecao = userRepository.findByEmail(usuario.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + usuario.getEmail()));
+        User usuarioSecao = userRepository.findByEmail(currentUser.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + currentUser.getEmail()));
 
             userRepository.deleteByEmail(usuarioSecao.getEmail());
 
@@ -139,7 +144,7 @@ public class UserService  implements UserDetailsService {
 
 
     public List<UserResponseDTO> listarTodosUsuariosInativos() {
-        return userRepository.findAllDeleted().stream().map((usuario)->this.mapToResponseDTO(usuario)).toList();
+        return userRepository.findAllDeleted().stream().map(this::mapToResponseDTO).toList();
     }
 
     @Override
