@@ -1,6 +1,5 @@
 package br.com.suaempresa.apigerenciamento.user.controller;
 
-import br.com.suaempresa.apigerenciamento.order.dto.PedidoRequestDTO;
 import br.com.suaempresa.apigerenciamento.user.dto.UserRegistrationDTO;
 import br.com.suaempresa.apigerenciamento.user.dto.UserResponseDTO;
 import br.com.suaempresa.apigerenciamento.user.model.User;
