@@ -117,7 +117,7 @@ public class UserService  implements UserDetailsService {
         User usuarioSecao = userRepository.findByEmail(usuario.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + usuario.getEmail()));
 
-        if (!usuario.getSenha().equals(usuarioSecao.getSenha())) {
+        if (!usuario.getSenha().equals(currentUser.getSenha())) {
             throw new ForbiddenException("Você só pode alterar somente seus dados, não de contas alheias");
         }
 
