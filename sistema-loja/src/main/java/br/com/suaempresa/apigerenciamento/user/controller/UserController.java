@@ -37,6 +37,7 @@ public class UserController {
     }
 
     @PostMapping("/dono")
+    @PreAuthorize("hasRole('DONO')")
     public ResponseEntity<UserResponseDTO> registerDono(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
         UserResponseDTO createdUser = userService.registerAdmin(registrationDTO);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
@@ -66,4 +67,7 @@ public class UserController {
         List<UserResponseDTO> users = userService.findAllUsers();
         return ResponseEntity.ok(users);
     }
+
+
+    
 }
