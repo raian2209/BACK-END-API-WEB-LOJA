@@ -144,7 +144,7 @@ public class PedidoService {
             return itemDTO;
         }).toList();
 
-        response.setCodigoCupomAplicado(pedido.getCupom().getCodigo());
+        response.setCodigoCupomAplicado(pedido.getCupom() != null ? pedido.getCupom().getCodigo().toUpperCase() : "");
         response.setItens(itensDTO);
         return response;
     }
