@@ -51,5 +51,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(erros, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<Map<String, String>> handleForbiddenException(ForbiddenException ex) {
+        Map<String, String> erros = new HashMap<>();
+        erros.put("erro", ex.getMessage());
+        return new ResponseEntity<>(erros, HttpStatus.FORBIDDEN);
+    }
+
 
 }
