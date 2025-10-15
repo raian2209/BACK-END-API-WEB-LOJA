@@ -113,17 +113,22 @@ public class UserService  implements UserDetailsService {
 
 
     @Transactional
-    public UserResponseDTO updateUsuario(UserRegistrationDTO usuario, User currentUser) {
-        User usuarioSecao = userRepository.findByEmail(usuario.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + usuario.getEmail()));
+    public UserResponseDTO updateUsuario(UserRegistrationDTO userRegistrationDTO, User currentUser) {
+        User usuarioSecao = userRepository.findByEmail(currentUser.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + userRegistrationDTO.getEmail()));
 
-        if (!usuario.getSenha().equals(currentUser.getSenha())) {
-            throw new ForbiddenException("Você só pode alterar somente seus dados, não de contas alheias");
+        if (!usuarioSecao.getId().equals(currentUser.getId())) {
+            throw new ForbiddenException("Você só pode alterar dados de sua conta");
         }
 
-        usuarioSecao.setEmail(usuario.getEmail());
-        usuarioSecao.setSenha(passwordEncoder.encode(usuario.getSenha()));
-        usuarioSecao.setNome(usuario.getNome());
+        if (userRepository.findByEmail(userRegistrationDTO.getEmail()).isPresent() && !userRegistrationDTO.getEmail().equals(currentUser.getEmail())) {
+            throw new EmailAlreadyExistsException("Esse email " + userRegistrationDTO.getEmail() + " já está cadastrado");
+        }
+
+
+        usuarioSecao.setEmail(userRegistrationDTO.getEmail());
+        usuarioSecao.setSenha(passwordEncoder.encode(userRegistrationDTO.getSenha()));
+        usuarioSecao.setNome(userRegistrationDTO.getNome());
 
         userRepository.save(usuarioSecao);
 
@@ -136,9 +141,9 @@ public class UserService  implements UserDetailsService {
         User usuarioSecao = userRepository.findByEmail(currentUser.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + currentUser.getEmail()));
 
-            userRepository.deleteByEmail(usuarioSecao.getEmail());
+        userRepository.deleteByEmail(usuarioSecao.getEmail());
 
-            return this.mapToResponseDTO(usuarioSecao);
+        return this.mapToResponseDTO(usuarioSecao);
     }
 
 
