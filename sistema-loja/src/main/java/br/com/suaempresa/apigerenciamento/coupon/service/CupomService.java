@@ -58,6 +58,7 @@ public class CupomService {
         Cupom cupom = cupomRepository.findById(id)
                 .orElseThrow(() -> new CupomNotFoundException("Cupom não encontrado com o ID: " + id));
 
+        cupom.setCodigo(requestDTO.getCodigo().toUpperCase());
         cupom.setTipoDesconto(requestDTO.getTipoDesconto());
         cupom.setValorDesconto(requestDTO.getValorDesconto());
         cupom.setDataValidade(requestDTO.getDataValidade());
