@@ -51,7 +51,6 @@ public class UserController {
     }
 
     @PutMapping
-    @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<UserResponseDTO> updateUser( @Valid @RequestBody UserRegistrationDTO userDTO,
                                                        @AuthenticationPrincipal User currentUser) {
         UserResponseDTO responseDTO = userService.updateUsuario(userDTO, currentUser);
