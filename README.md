@@ -52,3 +52,8 @@ POSTGRES_DB         gerenciamento_db
 ```bash
 docker-compose up -d
 ```
+
+## UML
+
+![](/web.drawio%20(1).png)
+
