@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cupons")
-@PreAuthorize("hasRole('ADMIN')") // Protege todos os métodos da classe
 public class CupomController {
 
     private final CupomService cupomService;
@@ -23,6 +22,7 @@ public class CupomController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')") // Protege todos os métodos da classe
     public ResponseEntity<CupomResponseDTO> createCupom(@Valid @RequestBody CupomRequestDTO requestDTO) {
         CupomResponseDTO responseDTO = cupomService.createCupom(requestDTO);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
@@ -30,18 +30,21 @@ public class CupomController {
 
     // TODO GET
     @GetMapping
+    @PreAuthorize("hasRole('USUARIO')") // Protege todos os métodos da classe
     public ResponseEntity<List<CupomResponseDTO>> findAllCupom() {
         return ResponseEntity.ok(cupomService.listCupom());
     }
 
     //TODO GET BY ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USUARIO')") // Protege todos os métodos da classe
     public ResponseEntity<CupomResponseDTO> findCupomById(@PathVariable Long id) {
         return ResponseEntity.ok(cupomService.findCupom(id));
     }
 
     // TODO PUT
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')") // Protege todos os métodos da classe
     public ResponseEntity<CupomResponseDTO> updateCupom(@PathVariable("id") Long id, @Valid @RequestBody CupomRequestDTO requestDTO) {
         CupomResponseDTO responseDTO = cupomService.updateCupom(id, requestDTO);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
@@ -50,6 +53,7 @@ public class CupomController {
 
     // TODO DELETE
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')") // Protege todos os métodos da classe
     public ResponseEntity<Void> deleteCupom(@PathVariable Long id) {
         cupomService.deleteCupom(id);
         return ResponseEntity.noContent().build();
