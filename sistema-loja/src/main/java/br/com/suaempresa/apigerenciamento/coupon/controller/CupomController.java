@@ -45,7 +45,7 @@ public class CupomController {
     // TODO PUT
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')") // Protege todos os métodos da classe
-    public ResponseEntity<CupomResponseDTO> updateCupom(@PathVariable("id") Long id, @Valid @RequestBody CupomRequestDTO requestDTO) {
+    public ResponseEntity<CupomResponseDTO> updateCupom(@PathVariable Long id, @Valid @RequestBody CupomRequestDTO requestDTO) {
         CupomResponseDTO responseDTO = cupomService.updateCupom(id, requestDTO);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
