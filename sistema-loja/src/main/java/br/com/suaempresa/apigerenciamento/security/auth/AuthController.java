@@ -31,10 +31,17 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getSenha())
         );
 
-        // 2. Se a autenticação for bem-sucedida, gera o token
-        var user = (UserDetails) authentication.getPrincipal();
+        var user = (br.com.suaempresa.apigerenciamento.user.model.User) authentication.getPrincipal();
+
         String token = jwtService.generateToken(user);
 
-        return ResponseEntity.ok(new AuthResponseDTO(token));
+        return ResponseEntity.ok(
+                new AuthResponseDTO(
+                        user.getId().toString(),
+                        user.getEmail(),
+                        user.getRole().name(),
+                        token
+                )
+        );
     }
 }

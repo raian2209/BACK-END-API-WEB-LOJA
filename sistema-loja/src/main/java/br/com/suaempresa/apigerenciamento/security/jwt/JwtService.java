@@ -32,7 +32,16 @@ public class JwtService {
 
     // Gera um token para o usuário
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+
+        // O UserDetails verdadeiro é sua entidade User
+        var user = (br.com.suaempresa.apigerenciamento.user.model.User) userDetails;
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId().toString());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole().name());
+
+        return generateToken(claims, userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
