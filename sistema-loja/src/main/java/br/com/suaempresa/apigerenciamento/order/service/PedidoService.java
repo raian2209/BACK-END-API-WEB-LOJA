@@ -113,7 +113,10 @@ public class PedidoService {
     // ...
 
     public List<PedidoResponseDTO> findOrderByUser(User currentUser) {
-        return Collections.singletonList(mapToResponseDTO((Pedido) pedidoRepository.findByClienteId(currentUser.getId())));
+        List<Pedido> pedidos = pedidoRepository.findByClienteId(currentUser.getId());
+        return pedidos.stream()
+                .map(this::mapToResponseDTO)
+                .toList();
     }
 
     public PedidoResponseDTO findOrderById(Long id, User cliente) {
