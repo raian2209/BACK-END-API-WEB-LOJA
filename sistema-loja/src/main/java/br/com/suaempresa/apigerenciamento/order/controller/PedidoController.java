@@ -2,6 +2,7 @@ package br.com.suaempresa.apigerenciamento.order.controller;
 
 import br.com.suaempresa.apigerenciamento.order.dto.PedidoRequestDTO;
 import br.com.suaempresa.apigerenciamento.order.dto.PedidoResponseDTO;
+import br.com.suaempresa.apigerenciamento.order.dto.VendaFornecedorDTO;
 import br.com.suaempresa.apigerenciamento.order.service.PedidoService;
 import br.com.suaempresa.apigerenciamento.user.model.User;
 import jakarta.validation.Valid;
@@ -62,6 +63,15 @@ public class PedidoController {
 
         return new ResponseEntity<>(pedidoResponseDTO, HttpStatus.NO_CONTENT);
 
+    }
+
+    @GetMapping("/vendas")
+    @PreAuthorize("hasRole('FORNECEDOR')")
+    public ResponseEntity<List<VendaFornecedorDTO>> getVendasFornecedor(
+            @AuthenticationPrincipal User currentUser) {
+
+        List<VendaFornecedorDTO> vendas = pedidoService.listarVendasDoFornecedor(currentUser);
+        return ResponseEntity.ok(vendas);
     }
     // com a devida lógica de autorização (usuário vê os seus, admin vê todos).
 }
