@@ -8,9 +8,11 @@ import br.com.suaempresa.apigerenciamento.exception.GlobalExceptionHandler;
 import br.com.suaempresa.apigerenciamento.exception.ProdutoNotFoundException;
 import br.com.suaempresa.apigerenciamento.order.dto.PedidoRequestDTO;
 import br.com.suaempresa.apigerenciamento.order.dto.PedidoResponseDTO;
+import br.com.suaempresa.apigerenciamento.order.dto.VendaFornecedorDTO;
 import br.com.suaempresa.apigerenciamento.order.model.ItemPedido;
 import br.com.suaempresa.apigerenciamento.order.model.Pedido;
 import br.com.suaempresa.apigerenciamento.order.model.StatusPedido;
+import br.com.suaempresa.apigerenciamento.order.repository.ItemPedidoRepository;
 import br.com.suaempresa.apigerenciamento.order.repository.PedidoRepository;
 import br.com.suaempresa.apigerenciamento.product.model.Produto;
 import br.com.suaempresa.apigerenciamento.product.repository.ProdutoRepository;
@@ -32,11 +34,14 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final ProdutoRepository produtoRepository;
     private final CupomRepository cupomRepository; // Injetaria se tivesse
+    private final ItemPedidoRepository itemPedidoRepository;
 
-    public PedidoService(PedidoRepository pedidoRepository, ProdutoRepository produtoRepository, CupomRepository cupomRepository) {
+    public PedidoService(PedidoRepository pedidoRepository, ProdutoRepository produtoRepository,
+                         CupomRepository cupomRepository,  ItemPedidoRepository itemPedidoRepository) {
         this.pedidoRepository = pedidoRepository;
         this.produtoRepository = produtoRepository;
         this.cupomRepository = cupomRepository;
+        this.itemPedidoRepository = itemPedidoRepository;
     }
 
     @Transactional
@@ -127,6 +132,29 @@ public class PedidoService {
         }
 
         return mapToResponseDTO(pedido);
+    }
+
+    @Transactional(readOnly = true)
+    public List<VendaFornecedorDTO> listarVendasDoFornecedor(User fornecedor) {
+        List<ItemPedido> itensVendidos = itemPedidoRepository.findAllVendasByFornecedor(fornecedor.getId());
+
+        // 2. Converte para DTO
+        return itensVendidos.stream().map(item -> {
+            VendaFornecedorDTO dto = new VendaFornecedorDTO();
+            dto.setPedidoId(item.getPedido().getId());
+            dto.setDataVenda(item.getPedido().getDataPedido());
+            dto.setNomeProduto(item.getProduto().getNome());
+            dto.setQuantidade(item.getQuantidade());
+            dto.setValorUnitario(item.getPrecoUnitario());
+            dto.setStatusPedido(item.getPedido().getStatus());
+            dto.setClienteNome(item.getPedido().getCliente().getNome());
+
+            // Calcula o faturamento desse item específico
+            double subtotal = item.getPrecoUnitario() * item.getQuantidade();
+            dto.setSubtotal(subtotal);
+
+            return dto;
+        }).toList();
     }
 
     private PedidoResponseDTO mapToResponseDTO(Pedido pedido) {
