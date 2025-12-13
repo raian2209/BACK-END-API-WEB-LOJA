@@ -80,6 +80,13 @@ public class ProdutoService {
         produtoRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
+    public List<ProdutoResponseDTO> findProductByIdFornecedor(User fornecedor){
+        return produtoRepository.findByFornecedorId(fornecedor.getId()).stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     // Método utilitário para mapear Entidade -> DTO
     private ProdutoResponseDTO mapToResponseDTO(Produto produto) {
         ProdutoResponseDTO dto = new ProdutoResponseDTO();

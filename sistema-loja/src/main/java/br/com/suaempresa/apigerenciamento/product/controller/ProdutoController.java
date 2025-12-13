@@ -68,4 +68,10 @@ public class ProdutoController {
         produtoService.deleteProduto(id, currentUser);
         return ResponseEntity.noContent().build(); // Retorna 204 No Content
     }
+
+    @GetMapping("/produtos-vendedor")
+    @PreAuthorize("hasRole('FORNECEDOR')")
+    public ResponseEntity<List<ProdutoResponseDTO>> getAllProdutosFornecedor(@AuthenticationPrincipal User currentUser) {
+        return ResponseEntity.ok(produtoService.findProductByIdFornecedor(currentUser));
+    }
 }
