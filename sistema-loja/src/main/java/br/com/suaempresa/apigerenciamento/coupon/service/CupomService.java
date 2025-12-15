@@ -51,6 +51,13 @@ public class CupomService {
         return mapToResponseDTO(cupom);
     }
 
+    @Transactional(readOnly = true)
+    public CupomResponseDTO findCupomByCodigo(String codigo) {
+        Cupom cupom = cupomRepository.findByCodigo(codigo)
+                .orElseThrow(() -> new CupomNotFoundException("Cupom não encontrado com o código: " + codigo));
+        return mapToResponseDTO(cupom);
+    }
+
 
     // TODO update
     @Transactional
