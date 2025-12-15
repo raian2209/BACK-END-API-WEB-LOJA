@@ -51,5 +51,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(erros, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(InvalidZeroOrNegativeException.class)
+    public ResponseEntity<Map<String, String>> ValorMenorIgualAZeroException(InvalidZeroOrNegativeException ex) {
+        Map<String, String> erros = new HashMap<>();
+        erros.put("erro", ex.getMessage());
+        return new ResponseEntity<>(erros, HttpStatus.NOT_FOUND);
+    }
+
 
 }

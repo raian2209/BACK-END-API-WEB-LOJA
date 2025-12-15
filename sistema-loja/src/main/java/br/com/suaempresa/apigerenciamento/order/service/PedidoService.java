@@ -2,10 +2,7 @@ package br.com.suaempresa.apigerenciamento.order.service;
 import br.com.suaempresa.apigerenciamento.coupon.model.Cupom;
 import br.com.suaempresa.apigerenciamento.coupon.model.TipoDesconto;
 import br.com.suaempresa.apigerenciamento.coupon.repository.CupomRepository;
-import br.com.suaempresa.apigerenciamento.exception.CupomInvalidoException;
-import br.com.suaempresa.apigerenciamento.exception.CupomNotFoundException;
-import br.com.suaempresa.apigerenciamento.exception.GlobalExceptionHandler;
-import br.com.suaempresa.apigerenciamento.exception.ProdutoNotFoundException;
+import br.com.suaempresa.apigerenciamento.exception.*;
 import br.com.suaempresa.apigerenciamento.order.dto.PedidoRequestDTO;
 import br.com.suaempresa.apigerenciamento.order.dto.PedidoResponseDTO;
 import br.com.suaempresa.apigerenciamento.order.dto.VendaFornecedorDTO;
@@ -63,23 +60,28 @@ public class PedidoService {
             itemPedido.setPedido(pedido);
             itemPedido.setProduto(produto);
             itemPedido.setQuantidade(itemDTO.getQuantidade());
-            itemPedido.setPrecoUnitario(produto.getPreco()); // Congela o preço do produto no momento da compra
+
+            BigDecimal precoUnitario = BigDecimal.valueOf(produto.getPreco());
+            itemPedido.setPrecoUnitario(produto.getPreco());
 
             itensPedido.add(itemPedido);
 
-            // Calcula o subtotal do item e adiciona ao total do pedido
             totalPedido = totalPedido.add(
-                    BigDecimal.valueOf(itemPedido.getPrecoUnitario()).multiply(BigDecimal.valueOf(itemPedido.getQuantidade()))
+                    precoUnitario.multiply(BigDecimal.valueOf(itemPedido.getQuantidade()))
             );
         }
 
         pedido.setItens(itensPedido);
 
-         if (requestDTO.getCodigoCupom() != null && !requestDTO.getCodigoCupom().isBlank()) {
-             Cupom cupom = validarEObterCupom(requestDTO.getCodigoCupom());
-             totalPedido = aplicarDesconto(totalPedido, cupom);
-             pedido.setCupom(cupom);
-         }
+        if (requestDTO.getCodigoCupom() != null && !requestDTO.getCodigoCupom().isBlank()) {
+            Cupom cupom = validarEObterCupom(requestDTO.getCodigoCupom());
+            totalPedido = aplicarDesconto(totalPedido, cupom);
+            pedido.setCupom(cupom);
+        }
+
+        if (totalPedido.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidZeroOrNegativeException("Valor não pode ser igual a zero");
+        }
 
         pedido.setTotal(totalPedido.doubleValue());
 
