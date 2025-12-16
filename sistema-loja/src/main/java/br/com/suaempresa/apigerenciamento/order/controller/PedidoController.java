@@ -56,7 +56,7 @@ public class PedidoController {
     }
 
     @PostMapping("/{id}")
-    @PreAuthorize("hasRole('USUARIO')")
+    //@PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<PedidoResponseDTO> cancelOrder(@PathVariable Long id,
                                                          @AuthenticationPrincipal User currentUser){
         PedidoResponseDTO pedidoResponseDTO = pedidoService.cancelOrder(id, currentUser);

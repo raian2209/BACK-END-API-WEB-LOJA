@@ -77,6 +77,7 @@ public class PedidoService {
             Cupom cupom = validarEObterCupom(requestDTO.getCodigoCupom());
             totalPedido = aplicarDesconto(totalPedido, cupom);
             pedido.setCupom(cupom);
+            System.out.println(totalPedido);
         }
 
         if (totalPedido.compareTo(BigDecimal.ZERO) <= 0) {
@@ -107,13 +108,11 @@ public class PedidoService {
 
     private BigDecimal aplicarDesconto(BigDecimal total, Cupom cupom) {
         if (cupom.getTipoDesconto() == TipoDesconto.PERCENTAGEM) {
-            BigDecimal percentual = cupom.getValorDesconto().divide(new BigDecimal("100"));
-            BigDecimal desconto = total.multiply(percentual);
-            return total.subtract(desconto).setScale(2, RoundingMode.HALF_UP);
-        } else if (cupom.getTipoDesconto() == TipoDesconto.FIXO) {
-            return total.subtract(cupom.getValorDesconto()).max(BigDecimal.ZERO);
+            BigDecimal desconto = total.multiply(cupom.getValorDesconto().divide(BigDecimal.valueOf(100)));
+            return total.subtract(desconto);
+        } else {
+            return total.subtract(cupom.getValorDesconto());
         }
-        return total;
     }
 
     // Implementar métodos para buscar e listar pedidos, com verificação de permissão
@@ -138,26 +137,40 @@ public class PedidoService {
 
     @Transactional(readOnly = true)
     public List<VendaFornecedorDTO> listarVendasDoFornecedor(User fornecedor) {
-        List<ItemPedido> itensVendidos = itemPedidoRepository.findAllVendasByFornecedor(fornecedor.getId());
 
-        // 2. Converte para DTO
+        List<ItemPedido> itensVendidos =
+                itemPedidoRepository.findAllVendasByFornecedor(fornecedor.getId());
+
         return itensVendidos.stream().map(item -> {
+
+            Pedido pedido = item.getPedido();
+
             VendaFornecedorDTO dto = new VendaFornecedorDTO();
-            dto.setPedidoId(item.getPedido().getId());
-            dto.setDataVenda(item.getPedido().getDataPedido());
+            dto.setPedidoId(pedido.getId());
+            dto.setDataVenda(pedido.getDataPedido());
             dto.setNomeProduto(item.getProduto().getNome());
             dto.setQuantidade(item.getQuantidade());
             dto.setValorUnitario(item.getPrecoUnitario());
-            dto.setStatusPedido(item.getPedido().getStatus());
-            dto.setClienteNome(item.getPedido().getCliente().getNome());
+            dto.setStatusPedido(pedido.getStatus());
+            dto.setClienteNome(pedido.getCliente().getNome());
 
-            // Calcula o faturamento desse item específico
-            double subtotal = item.getPrecoUnitario() * item.getQuantidade();
-            dto.setSubtotal(subtotal);
+            double subtotalItem = item.getPrecoUnitario() * item.getQuantidade();
+
+            double totalBrutoPedido = pedido.getItens().stream()
+                    .mapToDouble(i -> i.getPrecoUnitario() * i.getQuantidade())
+                    .sum();
+
+            double fatorDesconto = pedido.getTotal() / totalBrutoPedido;
+            double subtotalComDesconto = subtotalItem * fatorDesconto;
+
+
+            dto.setSubtotal(subtotalComDesconto);
 
             return dto;
+
         }).toList();
     }
+
 
     private PedidoResponseDTO mapToResponseDTO(Pedido pedido) {
         PedidoResponseDTO response = new PedidoResponseDTO();
@@ -178,6 +191,9 @@ public class PedidoService {
         }).toList();
 
         response.setItens(itensDTO);
+        if (pedido.getCupom() != null) {
+            response.setCodigoCupomAplicado(pedido.getCupom().getCodigo());
+        }
         return response;
     }
 
@@ -185,7 +201,7 @@ public class PedidoService {
     public PedidoResponseDTO cancelOrder(Long id, User currentUser) {
         Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new CupomNotFoundException("Pedido não encontrado com ID: " + id));
 
-        if (!pedido.getCliente().equals(currentUser)) {
+        if (!pedido.getCliente().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("Acesso negado. Você não é o proprietário deste produto.");
         }
 

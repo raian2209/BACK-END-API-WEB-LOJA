@@ -20,15 +20,24 @@ public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long> {
             "JOIN FETCH i.pedido ped " +
             "JOIN FETCH i.produto prod " +
             "WHERE prod.fornecedor.id = :fornecedorId " +
+            "AND ped.status <> 'CANCELADO' " +
             "ORDER BY ped.dataPedido DESC")
     List<ItemPedido> findAllVendasByFornecedor(@Param("fornecedorId") Long fornecedorId);
+
 
     @Query("SELECT COUNT(i) FROM ItemPedido i WHERE i.produto.fornecedor.id = :id AND i.pedido.status <> 'CANCELADO'")
     long countVendasByFornecedor(@Param("id") Long id);
 
-    @Query("SELECT SUM(i.quantidade * i.precoUnitario) " +
-            "FROM ItemPedido i " +
-            "WHERE i.produto.fornecedor.id = :fornecedorId " +
-            "AND i.pedido.status <> 'CANCELADO'")
+    @Query("""
+    SELECT COALESCE(SUM(p.total), 0)
+    FROM Pedido p
+    WHERE p.status <> 'CANCELADO'
+    AND EXISTS (
+        SELECT 1
+        FROM ItemPedido i
+        WHERE i.pedido = p
+        AND i.produto.fornecedor.id = :fornecedorId
+    )
+    """)
     Double calcularFaturamentoTotal(@Param("fornecedorId") Long fornecedorId);
 }
