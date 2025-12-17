@@ -75,14 +75,14 @@ public class ProdutoService {
             throw new AccessDeniedException("Acesso negado. Você não é o proprietário deste produto.");
         }
 
-        produto.setDeleted(false);
+        produto.setDeleted(true);
 
         produtoRepository.save(produto);
     }
 
     @Transactional(readOnly = true)
     public List<ProdutoResponseDTO> findProductByIdFornecedor(User fornecedor){
-        return produtoRepository.findByFornecedorIdAndDeletedTrue(fornecedor.getId()).stream()
+        return produtoRepository.findByFornecedorIdAndDeletedFalse(fornecedor.getId()).stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }

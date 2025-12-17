@@ -10,5 +10,5 @@ import java.util.List;
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     long countByFornecedorId(Long fornecedorId);
 
-    List<Produto> findByFornecedorIdAndDeletedTrue(Long fornecedorId);
+    List<Produto> findByFornecedorIdAndDeletedFalse(Long fornecedorId);
 }
