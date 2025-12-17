@@ -126,12 +126,11 @@ public class UserService  implements UserDetailsService {
     }
 
     @Transactional
-    public UserResponseDTO deleteUsuario(UserRegistrationDTO usuario) {
-
-        User usuarioSecao = userRepository.findByEmail(usuario.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + usuario.getEmail()));
-
-            userRepository.deleteByEmail(usuarioSecao.getEmail());
+    public UserResponseDTO deleteUsuario(User usuario) {
+        System.out.println("Teste");
+        User usuarioSecao = userRepository.findById(usuario.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + usuario.getId()));
+            userRepository.deleteByEmail(usuario.getEmail());
 
             return this.mapToResponseDTO(usuarioSecao);
     }
