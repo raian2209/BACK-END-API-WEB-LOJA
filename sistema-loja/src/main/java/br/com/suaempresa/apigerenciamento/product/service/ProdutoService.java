@@ -82,7 +82,7 @@ public class ProdutoService {
 
     @Transactional(readOnly = true)
     public List<ProdutoResponseDTO> findProductByIdFornecedor(User fornecedor){
-        return produtoRepository.findByFornecedorId(fornecedor.getId()).stream()
+        return produtoRepository.findByFornecedorIdAndDeletedTrue(fornecedor.getId()).stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
