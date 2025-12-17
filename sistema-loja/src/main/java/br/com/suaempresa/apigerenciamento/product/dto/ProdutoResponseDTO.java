@@ -12,6 +12,7 @@ public class ProdutoResponseDTO {
     private String descricao;
     private Double preco;
     private FornecedorDTO fornecedor; // DTO aninhado para dados do fornecedor
+    private boolean deleted;
 
     // DTO interno para evitar expor a entidade User completa
     @Getter

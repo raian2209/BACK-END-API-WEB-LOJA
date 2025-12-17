@@ -94,6 +94,7 @@ public class ProdutoService {
         dto.setNome(produto.getNome());
         dto.setDescricao(produto.getDescricao());
         dto.setPreco(produto.getPreco());
+        dto.setDeleted(produto.isDeleted());
 
         ProdutoResponseDTO.FornecedorDTO fornecedorDTO = new ProdutoResponseDTO.FornecedorDTO();
         fornecedorDTO.setId(produto.getFornecedor().getId());
