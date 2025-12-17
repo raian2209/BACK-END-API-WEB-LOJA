@@ -117,7 +117,7 @@ public class UserService  implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + usuario.getEmail()));
 
         usuarioSecao.setEmail(usuario.getEmail());
-        usuarioSecao.setSenha(usuario.getSenha());
+        usuarioSecao.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuarioSecao.setNome(usuario.getNome());
 
         userRepository.save(usuarioSecao);
