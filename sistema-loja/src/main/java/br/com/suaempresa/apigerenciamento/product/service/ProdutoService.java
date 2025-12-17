@@ -71,13 +71,13 @@ public class ProdutoService {
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new ProdutoNotFoundException("Produto não encontrado com o ID: " + id));
 
-        // VERIFICAÇÃO DE PERMISSÃO
         if (!produto.getFornecedor().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("Acesso negado. Você não é o proprietário deste produto.");
         }
 
-        // A anotação @SQLDelete no model fará a mágica do Soft Delete
-        produtoRepository.deleteById(id);
+        produto.setDeleted(false);
+
+        produtoRepository.save(produto);
     }
 
     @Transactional(readOnly = true)
